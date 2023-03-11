@@ -36,12 +36,9 @@ class Monitor(args: Array<String>, private val notifier: Notifier) {
         while(true) {
             println("Waiting for event...")
             val key = watcher.take() // Blocks until an event is available
-            println("Events received!")
-
             // Cycle through all events
             for (event in key.pollEvents()) {
-                println("Event: ${event.kind()}")
-                if (event.kind() != java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY) {
+                if (event.kind() != StandardWatchEventKinds.ENTRY_MODIFY) {
                     println("Other event: ${event.kind()}")
                     continue
                 }

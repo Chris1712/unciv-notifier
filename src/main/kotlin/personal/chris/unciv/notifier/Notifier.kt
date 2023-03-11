@@ -7,4 +7,6 @@ class Notifier {
         // TODO
         println("Notification sent to ${target}")
     }
+
+    // TODO we could also regularly check how long it's been the current player's turn, and trigger some extra notification
 }

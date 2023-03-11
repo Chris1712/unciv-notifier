@@ -8,27 +8,27 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-class NotifierTest {
+class MonitorTest {
 
     @Nested
     class ValidateArgs {
 
         @Test fun validatesNoArgs() {
-            val validationError = Notifier.validateArgs(emptyArray());
+            val validationError = Monitor.validateArgs(emptyArray());
 
             assertNotNull(validationError)
             assertEquals("Must supply 1 arg (path to watch), received: 0", validationError)
         }
 
         @Test fun validatesTwoArgs() {
-            val validationError = Notifier.validateArgs(arrayOf("arg1", "arg2"));
+            val validationError = Monitor.validateArgs(arrayOf("arg1", "arg2"));
 
             assertNotNull(validationError)
             assertEquals("Must supply 1 arg (path to watch), received: 2", validationError)
         }
 
         @Test fun validatesNonExistentFile() {
-            val validationError = Notifier.validateArgs(arrayOf("not-a-file"));
+            val validationError = Monitor.validateArgs(arrayOf("not-a-file"));
 
             assertNotNull(validationError)
             assertEquals("File at not-a-file does not exist", validationError)

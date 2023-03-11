@@ -10,9 +10,5 @@ class UncivNotifier {
 }
 
 fun main(args: Array<String>) {
-    if (args.size != 1) {
-        println("Must supply 1 arg (path to watch), received: ${args.size}")
-        exitProcess(1)
-    }
-    println("Notification service watching for changes in ${args[0]}")
+    Notifier.MonitorUncivSave(args)
 }

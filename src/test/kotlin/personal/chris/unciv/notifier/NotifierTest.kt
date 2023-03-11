@@ -14,21 +14,21 @@ class NotifierTest {
     class ValidateArgs {
 
         @Test fun validatesNoArgs() {
-            val validationError = Notifier.ValidateArgs(emptyArray());
+            val validationError = Notifier.validateArgs(emptyArray());
 
             assertNotNull(validationError)
             assertEquals("Must supply 1 arg (path to watch), received: 0", validationError)
         }
 
         @Test fun validatesTwoArgs() {
-            val validationError = Notifier.ValidateArgs(arrayOf("arg1", "arg2"));
+            val validationError = Notifier.validateArgs(arrayOf("arg1", "arg2"));
 
             assertNotNull(validationError)
             assertEquals("Must supply 1 arg (path to watch), received: 2", validationError)
         }
 
         @Test fun validatesNonExistentFile() {
-            val validationError = Notifier.ValidateArgs(arrayOf("not-a-file"));
+            val validationError = Notifier.validateArgs(arrayOf("not-a-file"));
 
             assertNotNull(validationError)
             assertEquals("File at not-a-file does not exist", validationError)

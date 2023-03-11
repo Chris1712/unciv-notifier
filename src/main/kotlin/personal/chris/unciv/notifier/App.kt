@@ -3,12 +3,11 @@
  */
 package personal.chris.unciv.notifier
 
-import kotlin.system.exitProcess
-
 class UncivNotifier {
 
 }
 
 fun main(args: Array<String>) {
-    Notifier.MonitorUncivSave(args)
+    val notifier = Notifier(args)
+    notifier.monitor()
 }

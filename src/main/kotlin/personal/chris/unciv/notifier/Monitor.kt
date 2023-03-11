@@ -31,6 +31,7 @@ class Monitor(args: Array<String>, private val notifier: Notifier) {
     /**
      * Method to monitor the watcher for events indefinitely.
      * @see https://docs.oracle.com/javase/tutorial/essential/io/notification.html#register
+     * We have to monitor the entire dir and filter to events on the file we care about
      */
     fun monitor() {
         while(true) {
@@ -61,9 +62,9 @@ class Monitor(args: Array<String>, private val notifier: Notifier) {
 
     private fun handleModification() {
         println("Save file modified!")
-        val nextPlayer = UncivParser.getNextTurn(saveFileAbsolute)
+        val nextPlayer = UncivParser.getNextTurnUuid(saveFileAbsolute)
         // TODO don't notify the same person 2x in a row, in case of repeated modification
-        notifier.notify(nextPlayer);
+        notifier.notify(nextPlayer.toString());
     }
 
     companion object {

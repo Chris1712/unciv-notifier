@@ -4,7 +4,9 @@ Project for monitoring an [unciv](https://github.com/yairm210/unciv) save and no
 
 ## How it works
 
-1. `Monitor` watches the unciv save directory, using the path supplied as an argument to the service.
+1. `Monitor` watches the unciv save preview file
+(EG `/var/unciv-saves/21f819a1-ed62-432d-ac57-9892af3e7c00_Preview`,
+using the path supplied as an argument to the service.
 2. When the file is changed (IE a turn is complete), we use `UncivParser` to load the file and determine the next turn taker
 3. Notify that person using `Notifier`
 

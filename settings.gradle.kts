@@ -8,4 +8,3 @@
  */
 
 rootProject.name = "unciv-notifier"
-include("app")

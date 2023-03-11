@@ -22,8 +22,13 @@ Extract where needed and use `unciv-notifier/bin/unciv-notifier` (or the equival
 `create-release.sh` will build the latest version and tag as a release on github.
 Requires github cli to be configured locally.
 
-### Systemd
-(TODO)
+[Latest version URL](https://github.com/Chris1712/unciv-notifier/releases/latest/download/unciv-notifier.zip)
 
-An example service file is included in root as `unciv-notifier.service` for systemd based systems.
-Copy this into /etc/systemd/system/unciv-notifier.service and edit the `ExecStart` line to point to the correct location of the `unciv-notifier` script.
+The 'citadel' repo uses this URL to configure the service running on citadel.
+
+## TODO
+- Finish functionality (save file parsing, discord integration)
+- Don't double notify
+- Carefully double notify, if on the same turn for a long time
+- Improve source of config (Save file location, uuid -> discord mappings)
+- Better release process

@@ -1,4 +1,6 @@
 #!/bin/bash
+# Exit on any errors
+set -e
 
 echo "We should automate this or use a github action, but for now... make sure you're on main and you've pushed everything"
 read -n 1 -p "Press any key to continue..."

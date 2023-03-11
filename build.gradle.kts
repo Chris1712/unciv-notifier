@@ -32,7 +32,7 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClass.set("personal.chris.unciv.notifier.UncivNotifierKt")
+    mainClass.set("personal.chris.unciv.notifier.AppKt")
 }
 
 tasks.named<Test>("test") {

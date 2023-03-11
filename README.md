@@ -8,7 +8,7 @@ Project for monitoring an [unciv](https://github.com/yairm210/unciv) save and no
 2. When the file is changed (IE a turn is complete), we use `UncivParser` to load the file and determine the next turn taker
 3. Notify that person using `Notifier`
 
-## How to deploy
+## How to build
 
 This project builds with gradle, the included wrapper scripts in the root directory (`gradlew` and `gradlew.bat`)
 are self-contained and should require only a recent JVM.
@@ -16,6 +16,11 @@ are self-contained and should require only a recent JVM.
 `./gradlew build` populates the `build/distributions` with a tar and a zip file, these have identical contents.
 
 Extract where needed and use `unciv-notifier/bin/unciv-notifier` (or the equivalent bat in windows) to run the service.
+
+## Deployment
+
+`create-release.sh` will build the latest version and tag as a release on github.
+Requires github cli to be configured locally.
 
 ### Systemd
 (TODO)

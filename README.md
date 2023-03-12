@@ -32,9 +32,9 @@ The 'citadel' repo uses this URL to configure the service running on citadel.
 
 ### Running
 
-The project loads config (save file location, discord bot token, etc.) from a file called `config.yaml`,
-this file's path should be provided as the sole argument to the service when executed. A sample config file is included
-as `sample-config.yaml` in src/test/resources.
+The project loads config (save file location, discord bot token, etc.) from a yaml config file,
+this file's path should be provided as the sole argument to the service when executed.
+A sample config file is included as `sample-config.yaml` in src/test/resources.
 
 ## Discord integration
 
@@ -46,8 +46,5 @@ To add to a server you control click this link: (URL is bot's application id and
 https://discord.com/oauth2/authorize?client_id=1084232402496389193&scope=bot&permissions=2048
 
 ## TODO
-- Finish functionality (save file parsing, discord integration)
-- Don't double notify
-- Carefully double notify, if on the same turn for a long time
-- Improve source of config (Save file location, uuid -> discord mappings)
+- Carefully repeat notifications, if on the same turn for a long time
 - Better release process

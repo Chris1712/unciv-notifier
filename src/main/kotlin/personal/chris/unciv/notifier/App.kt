@@ -8,7 +8,8 @@ class UncivNotifier {
 }
 
 fun main(args: Array<String>) {
-    val notifier = Notifier()
-    val monitor = Monitor(args, notifier)
+    val config = Config.fromArgs(args)
+    val notifier = Notifier(config)
+    val monitor = Monitor(config, notifier)
     monitor.monitor()
 }

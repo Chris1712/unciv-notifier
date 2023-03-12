@@ -4,33 +4,41 @@ import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
+import java.util.UUID
 
-class Notifier {
+class Notifier(config: Config) {
 
-    val client = HttpClient.newBuilder().build()
-    val token = System.getenv("DISCORD_TOKEN")
-
-    val CHANNEL_ID = "1084233698439876649"
-    val CHANNEL_MESSAGE_SEND_URL = URI.create("https://discord.com/api/v9/channels/$CHANNEL_ID/messages")
+    private val client: HttpClient
+    private val token: String
+    private val channelMessageSendUri: URI
+    private val uncivToDiscordUserMap: Map<UUID, String>
 
     init {
+        this.client = HttpClient.newBuilder().build()
         // Load some config from a file
-
+        this.token = config.discordToken
+        this.channelMessageSendUri = URI.create("https://discord.com/api/v9/channels/${config.discordChannelId}/messages")!!
+        this.uncivToDiscordUserMap = config.uncivToDiscordUserMap
     }
 
-    fun notify(target: String) {
-        println("Notifying ${target} it is their turn")
-
-        // Target here sohuld be a user ID, eg
+    fun notify(target: UUID) {
+        println("Notifying unciv uuid ${target} that it is their turn")
+        val targetDiscordId = uncivToDiscordUserMap[target]
+        if (targetDiscordId == null) {
+            println("No discord user mapped to unciv uuid ${target} - check config file")
+            return
+        } else {
+            println("Mapped unciv uuid ${target} to discord user id ${targetDiscordId}")
+        }
 
         val messageBody = """
             {
-                "content": "It is your turn <@${target}>!"
+                "content": "It is your turn <@${targetDiscordId}>!"
             }
         """.trimIndent()
 
         val request = HttpRequest.newBuilder()
-            .uri(CHANNEL_MESSAGE_SEND_URL)
+            .uri(channelMessageSendUri)
             .POST(HttpRequest.BodyPublishers.ofString(messageBody))
             .header("Content-Type", "application/json")
             .header("Authorization", "Bot ${token}")
@@ -39,11 +47,9 @@ class Notifier {
         val response = client.send(request, HttpResponse.BodyHandlers.ofString())
         if (response.statusCode() != 200) {
             println("Error sending notification: ${response.body()}")
-            throw RuntimeException("Error sending notification");
+            throw RuntimeException("Error sending notification to unciv uuid ${target}, discord user id ${targetDiscordId}");
         } else {
-            println("Notification sent to ${target}")
+            println("Notification sent to unciv uuid ${target}, discord user id ${targetDiscordId}")
         }
     }
-
-    // TODO we could also regularly check how long it's been the current player's turn, and trigger some extra notification
 }

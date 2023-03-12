@@ -1,0 +1,7 @@
+savePath: /var/unciv-saves/
+discordToken: abc.y8yTg565.l1I9Xfff4r
+discordChannelId: 1084429893288349699
+uncivToDiscordUserMap:
+  # Unciv player ID : Discord user ID
+  10bf8d62-c112-11ed-afa1-0242ac120002: 4564879
+  b12de14f-37dc-4c01-a0e0-84a307683306: 78978979811112

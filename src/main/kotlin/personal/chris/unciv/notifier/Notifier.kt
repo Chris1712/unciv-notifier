@@ -17,7 +17,6 @@ class Notifier(config: Config) {
     init {
         this.client = HttpClient.newBuilder().build()
         this.rnd = Random()
-        // Load some config from a file
         this.token = config.discordToken
         this.channelMessageSendUri = URI.create("https://discord.com/api/v9/channels/${config.discordChannelId}/messages")!!
         this.uncivToDiscordUserMap = config.uncivToDiscordUserMap

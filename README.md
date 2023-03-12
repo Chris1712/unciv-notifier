@@ -28,6 +28,15 @@ Requires github cli to be configured locally.
 
 The 'citadel' repo uses this URL to configure the service running on citadel.
 
+## Discord integration
+
+The service uses a discord bot to notify players.
+See [discord docs for more info](https://discord.com/developers/docs/topics/oauth2#bots)
+
+To add to a server you control click this link: (URL is bot's application id and permissions into, 2048 -> send messages
+
+https://discord.com/oauth2/authorize?client_id=1084232402496389193&scope=bot&permissions=2048
+
 ## TODO
 - Finish functionality (save file parsing, discord integration)
 - Don't double notify

@@ -74,7 +74,9 @@ class Notifier(config: Config) {
             "Your move, <@${discordId}>. Make it count!",
             "We're all waiting on you, <@${discordId}>.",
             "You're up, <@${discordId}>! Let's do this.",
-            "The fate of the game is in your hands, <@${discordId}>."
+            "The fate of the game is in your hands, <@${discordId}>.",
+            "Awaiting instructions, <@${discordId}>.",
+            "I am <@${discordId}>, please insert girder",
         )
 
         return messages[rnd.nextInt(messages.size)]

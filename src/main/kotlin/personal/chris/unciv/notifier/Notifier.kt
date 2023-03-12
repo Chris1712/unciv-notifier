@@ -4,17 +4,19 @@ import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
-import java.util.UUID
+import java.util.*
 
 class Notifier(config: Config) {
 
     private val client: HttpClient
+    private val rnd: Random
     private val token: String
     private val channelMessageSendUri: URI
     private val uncivToDiscordUserMap: Map<UUID, String>
 
     init {
         this.client = HttpClient.newBuilder().build()
+        this.rnd = Random()
         // Load some config from a file
         this.token = config.discordToken
         this.channelMessageSendUri = URI.create("https://discord.com/api/v9/channels/${config.discordChannelId}/messages")!!
@@ -33,7 +35,7 @@ class Notifier(config: Config) {
 
         val messageBody = """
             {
-                "content": "It is your turn <@${targetDiscordId}>!"
+                "content": "${getMessage(targetDiscordId)}"
             }
         """.trimIndent()
 
@@ -51,5 +53,30 @@ class Notifier(config: Config) {
         } else {
             println("Notification sent to unciv uuid ${target}, discord user id ${targetDiscordId}")
         }
+    }
+
+    fun getMessage(discordId: String): String {
+        val messages = listOf(
+            // With thanks to chatgpt
+            "It's your turn, <@${discordId}>!",
+            "<@${discordId}>, you're up!",
+            "Time for your turn <@${discordId}>",
+            "<@${discordId}>, the game needs you!",
+            "Your turn, <@${discordId}>.",
+            "<@${discordId}>, are you ready to play?",
+            "Ready or not, <@${discordId}>, here we go!",
+            "Your turn has arrived, <@${discordId}>!",
+            "<@${discordId}>, it's time to play!",
+            "Attention <@${discordId}>: your turn is up!",
+            "It's time to make your move, <@${discordId}>.",
+            "<@${discordId}>, we're counting on you to keep the game going!",
+            "The game awaits, <@${discordId}>.",
+            "Your move, <@${discordId}>. Make it count!",
+            "We're all waiting on you, <@${discordId}>.",
+            "You're up, <@${discordId}>! Let's do this.",
+            "The fate of the game is in your hands, <@${discordId}>."
+        )
+
+        return messages[rnd.nextInt(messages.size)]
     }
 }

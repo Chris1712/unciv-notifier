@@ -18,7 +18,7 @@ class ConfigTest {
             val config = Config.fromArgs(arrayOf("src/test/resources/sample-config.yaml"))
 
             assertNotNull(config)
-            assertEquals("/var/unciv-saves/", config.savePath)
+            assertEquals("/var/unciv-saves/4fea48b1-f8e5-4b0a-a784-23b51fec6fdc_Preview", config.savePath)
             assertEquals("abc.y8yTg565.l1I9Xfff4r", config.discordToken)
             assertEquals("1084429893288349699", config.discordChannelId)
             assertEquals(2, config.uncivToDiscordUserMap.size)
@@ -33,14 +33,14 @@ class ConfigTest {
             val validationError = Config.validateArgs(emptyArray());
 
             assertNotNull(validationError)
-            assertEquals("Must supply 1 arg (path to watch), received: 0", validationError)
+            assertEquals("Must supply 1 arg (path to config.yaml), received: 0", validationError)
         }
 
         @Test fun validatesTwoArgs() {
             val validationError = Config.validateArgs(arrayOf("arg1", "arg2"));
 
             assertNotNull(validationError)
-            assertEquals("Must supply 1 arg (path to watch), received: 2", validationError)
+            assertEquals("Must supply 1 arg (path to config.yaml), received: 2", validationError)
         }
 
         @Test fun validatesNonExistentFile() {

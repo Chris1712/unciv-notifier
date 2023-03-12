@@ -20,7 +20,9 @@ data class Config(val savePath: String, val discordToken: String, val discordCha
             val configFile = args[0]
             val mapper = ObjectMapper(YAMLFactory()).registerKotlinModule()
 
-            return mapper.readValue(File(configFile), Config::class.java)
+            val config = mapper.readValue(File(configFile), Config::class.java)
+            println("Loaded config from ${configFile}:\n${config}")
+            return config
         }
 
         fun validateArgs(args: Array<String>): String? {

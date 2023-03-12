@@ -26,8 +26,7 @@ dependencies {
     // Use the JUnit 5 integration.
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.1")
 
-    // This dependency is used by the application.
-    implementation("com.google.guava:guava:31.1-jre")
+
 }
 
 application {

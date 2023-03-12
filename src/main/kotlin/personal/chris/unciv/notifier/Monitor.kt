@@ -2,6 +2,7 @@ package personal.chris.unciv.notifier
 
 import java.io.File
 import java.nio.file.*
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.system.exitProcess
 
 
@@ -11,6 +12,7 @@ class Monitor(args: Array<String>, private val notifier: Notifier) {
     private val saveFileParentDir: Path
     private val saveFileRelative: Path
     private val watcher: WatchService
+    private val queue = AtomicInteger(0)
 
     init {
         val validationError = validateArgs(args)
@@ -32,6 +34,8 @@ class Monitor(args: Array<String>, private val notifier: Notifier) {
      * Method to monitor the watcher for events indefinitely.
      * @see https://docs.oracle.com/javase/tutorial/essential/io/notification.html#register
      * We have to monitor the entire dir and filter to events on the file we care about
+     * Note that in practise we get many modification events, some of which seem to be before the file is safe to read.
+     * So we debounce the event handling.
      */
     fun monitor() {
         while(true) {
@@ -47,7 +51,7 @@ class Monitor(args: Array<String>, private val notifier: Notifier) {
                     println("Event for ${event.context()} is not the save file, ignoring")
                     continue
                 } else {
-                    handleModification()
+                    Thread{handleModification()}.start() // Trigger the notification in a new thread to debounce
                 }
             }
 
@@ -60,15 +64,27 @@ class Monitor(args: Array<String>, private val notifier: Notifier) {
         }
     }
 
+    /**
+     * To be triggered concurrently - only proceeds when no other calls for 2s
+     */
     private fun handleModification() {
-        println("Save file modified!")
-        val nextPlayer = UncivParser.getNextTurnUuid(saveFileAbsolute)
-        // TODO don't notify the same person 2x in a row, in case of repeated modification
-        notifier.notify(nextPlayer.toString());
+        println("handleModification start!")
+        val queueSizeStart = queue.incrementAndGet()
+        println("Queue size start: ${queueSizeStart}")
+        Thread.sleep(2000L)
+        val queueSizeEnd = queue.decrementAndGet()
+        println("Queue size end: ${queueSizeEnd}")
+
+        if (queueSizeEnd > 0) {
+            return
+        } else {
+            val nextPlayer = UncivParser.getNextTurnUuid(saveFileAbsolute)
+            // TODO don't notify the same person 2x in a row, in case of repeated modification
+            notifier.notify(nextPlayer.toString())
+        }
     }
 
     companion object {
-
         fun validateArgs(args: Array<String>): String? {
             if (args.size != 1) {
                 return "Must supply 1 arg (path to watch), received: ${args.size}"

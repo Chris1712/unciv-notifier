@@ -3,7 +3,6 @@
  */
 package personal.chris.unciv.notifier
 
-import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.test.Test
 import kotlin.test.assertContains
@@ -11,17 +10,21 @@ import kotlin.test.assertEquals
 
 class UncivParserTest {
 
-    val testFile: Path = Paths.get("src/test/resources/sample_Preview")
-
     @Test fun extractsData() {
-        val output = UncivParser.extractObjectFromFile(testFile)
+        val output = UncivParser.extractObjectFromFile(Paths.get("src/test/resources/sample_Preview"))
 
         assertContains(output, "playerId:ccc2ac3b-7d1e-4546-bf72-205e2f0f9694")
     }
 
     @Test fun getsCorrectTurn() {
-        val nextTurn = UncivParser.getNextTurnUuid(testFile)
+        val nextTurn = UncivParser.getNextTurnUuid(Paths.get("src/test/resources/sample_Preview"))
 
         assertEquals("2cba587d-e619-4dc7-8b20-d31a032d58be", nextTurn.toString())
+    }
+
+    @Test fun getsCorrectTurn2() {
+        val nextTurn = UncivParser.getNextTurnUuid(Paths.get("src/test/resources/sample2_Preview"))
+
+        assertEquals("b1c460d0-bf64-4e93-ad1d-a6576aad748f", nextTurn.toString())
     }
 }

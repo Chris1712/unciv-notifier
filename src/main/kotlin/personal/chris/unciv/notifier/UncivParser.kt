@@ -20,7 +20,7 @@ class UncivParser {
             val currentCiv: String = civMatch.groupValues[1]
             // 'France' isn't much use, we need to find the player UUID for this civ.
             // We have a section like "civName:France,\n      playerId:2cba587d-e619-4dc7-8b20-d31a032d58be,":
-            val playerMatch = Regex("""civName:$currentCiv,\s*playerId:([^,]*),""").find(saveFileContents)
+            val playerMatch = Regex("""civName:$currentCiv,[^\}]*playerId:([^,}]*)""").find(saveFileContents)
                 ?: throw Exception("Couldn't find player UUID for civ $currentCiv in save file")
             val currentPlayerString: String = playerMatch!!.groupValues[1]
 

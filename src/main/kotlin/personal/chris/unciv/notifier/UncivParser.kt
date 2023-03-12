@@ -36,6 +36,9 @@ class UncivParser {
 
             // We read the file as a string:
             val contents: String = saveFile.toFile().readText()
+            println("Extracting object from file ${saveFile.fileName} - (${contents.length} chars)")
+            println("First 10 chars of contents: ${contents.substring(0, 10)}")
+            println("Last 10 chars of contents: ${contents.substring(contents.length - 10)}")
             //  Decode this base64 string to bytes:
             val compressedBytes = Base64.getDecoder().decode(contents)
             //  Unzip the bytes:

@@ -1,9 +1,5 @@
 package personal.chris.unciv.notifier
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-import java.lang.Integer.max
-import java.lang.Integer.min
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -12,23 +8,17 @@ import java.util.*
 
 class Notifier(config: Config) {
 
-    private val messagesToKeep = 5
-    private val client: HttpClient = HttpClient.newBuilder().build()
-    private val mapper: ObjectMapper = ObjectMapper()
-    private val rnd: Random = Random()
-
-    private val requestBase: (() -> HttpRequest.Builder)
-    private val channelMessageUri: URI // For POST / GET message
-    private val getDeleteUri: ((String) -> URI)
+    private val client: HttpClient
+    private val rnd: Random
+    private val token: String
+    private val channelMessageSendUri: URI
     private val uncivToDiscordUserMap: Map<UUID, String>
 
     init {
-        this.requestBase = { HttpRequest.newBuilder()
-            .header("Content-Type", "application/json")
-            .header("Authorization", "Bot ${config.discordToken}") }
-        this.channelMessageUri = URI.create("https://discord.com/api/v9/channels/${config.discordChannelId}/messages")!!
-        this.getDeleteUri = { messageId ->
-            URI.create("https://discord.com/api/v9/channels/${config.discordChannelId}/messages/${messageId}")!! }
+        this.client = HttpClient.newBuilder().build()
+        this.rnd = Random()
+        this.token = config.discordToken
+        this.channelMessageSendUri = URI.create("https://discord.com/api/v9/channels/${config.discordChannelId}/messages")!!
         this.uncivToDiscordUserMap = config.uncivToDiscordUserMap
     }
 
@@ -48,9 +38,11 @@ class Notifier(config: Config) {
             }
         """.trimIndent()
 
-        val request = requestBase()
-            .uri(channelMessageUri)
+        val request = HttpRequest.newBuilder()
+            .uri(channelMessageSendUri)
             .POST(HttpRequest.BodyPublishers.ofString(messageBody))
+            .header("Content-Type", "application/json")
+            .header("Authorization", "Bot ${token}")
             .build();
 
         val response = client.send(request, HttpResponse.BodyHandlers.ofString())
@@ -60,15 +52,9 @@ class Notifier(config: Config) {
         } else {
             println("Notification sent to unciv uuid ${target}, discord user id ${targetDiscordId}")
         }
-
-        // Clean up old messages
-        cleanMessages()
     }
 
-    /**
-     * Get a random message to send for turn notification
-     */
-    private fun getMessage(discordId: String): String {
+    fun getMessage(discordId: String): String {
         val messages = listOf(
             // With thanks to chatgpt
             "It's your turn, <@${discordId}>!",
@@ -93,54 +79,5 @@ class Notifier(config: Config) {
         )
 
         return messages[rnd.nextInt(messages.size)]
-    }
-
-    /**
-     * Retrieve existing messages in the channel, delete all but the oldest N
-     */
-    private fun cleanMessages() {
-        val getMessagesRequest = requestBase()
-            .uri(channelMessageUri)
-            .build();
-
-        val httpResponse = client.send(getMessagesRequest, HttpResponse.BodyHandlers.ofString())
-        if (httpResponse.statusCode() != 200) {
-            println("Error getting messages: ${httpResponse.body()}")
-            throw RuntimeException("Error getting messages")
-        }
-        val messages: JsonNode = this.mapper.readTree(httpResponse.body())
-        val idsToDelete = determineDeletions(messages, this.messagesToKeep)
-        println("Deleting ${idsToDelete.size} old messages")
-
-        idsToDelete.forEach { id ->
-            val deleteRequest = requestBase()
-                .uri(getDeleteUri(id))
-                .DELETE()
-                .build()
-
-            val deleteResponse = client.send(deleteRequest, HttpResponse.BodyHandlers.ofString())
-            if (deleteResponse.statusCode() != 204) {
-                println("Error deleting message ${id}: ${deleteResponse.body()}")
-                throw RuntimeException("Error deleting message ${id}")
-            }
-            // The discord API is rate limited; we can parse headers to carefully avoid this, but for now just sleep
-            Thread.sleep(500L) // Rate limit to 2 requests per second
-        }
-    }
-
-    companion object {
-
-        // Consume messages json from discord API, and return a list of ids to delete (keep the newest N)
-        fun determineDeletions(messages: JsonNode, numberToKeep: Int): List<String> {
-            val totalMessages = messages.size()
-            val toDelete = min( // Don't delete more than 10 at a time because of rate limtiing
-                max(0, totalMessages - numberToKeep),
-                10
-            )
-
-            return messages.sortedBy { it["timestamp"].asText() }
-                .take(toDelete)
-                .map { it["id"].asText() }
-        }
     }
 }

@@ -3,6 +3,7 @@ package personal.chris.unciv.notifier
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import java.lang.Integer.max
+import java.lang.Integer.min
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -122,6 +123,8 @@ class Notifier(config: Config) {
                 println("Error deleting message ${id}: ${deleteResponse.body()}")
                 throw RuntimeException("Error deleting message ${id}")
             }
+            // The discord API is rate limited; we can parse headers to carefully avoid this, but for now just sleep
+            Thread.sleep(500L) // Rate limit to 2 requests per second
         }
     }
 
@@ -130,7 +133,10 @@ class Notifier(config: Config) {
         // Consume messages json from discord API, and return a list of ids to delete (keep the newest N)
         fun determineDeletions(messages: JsonNode, numberToKeep: Int): List<String> {
             val totalMessages = messages.size()
-            val toDelete = max(0, totalMessages - numberToKeep)
+            val toDelete = min( // Don't delete more than 10 at a time because of rate limtiing
+                max(0, totalMessages - numberToKeep),
+                10
+            )
 
             return messages.sortedBy { it["timestamp"].asText() }
                 .take(toDelete)

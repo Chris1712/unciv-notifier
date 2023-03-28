@@ -32,6 +32,27 @@ class Notifier(config: Config) {
             println("Mapped unciv uuid ${target} to discord user id ${targetDiscordId}")
         }
 
+
+        // Make the request - if it fails, wait 2s and try again
+        var retryCount = 0;
+        while (retryCount < 3) {
+            try {
+                sendNotification(targetDiscordId)
+                println("Notification sent to unciv uuid ${target}, discord user id ${targetDiscordId}")
+                break
+            } catch (e: Exception) {
+                println("Error sending notification to unciv uuid ${target}, discord user id ${targetDiscordId} - retrying in 2s")
+                Thread.sleep(2000)
+            }
+            retryCount++
+            if (retryCount == 3) {
+                println("3 failures, giving up on notifying unciv uuid ${target}, discord user id ${targetDiscordId}")
+            }
+        }
+
+    }
+
+    fun sendNotification(targetDiscordId: String) {
         val messageBody = """
             {
                 "content": "${getMessage(targetDiscordId)}"
@@ -47,10 +68,7 @@ class Notifier(config: Config) {
 
         val response = client.send(request, HttpResponse.BodyHandlers.ofString())
         if (response.statusCode() != 200) {
-            println("Error sending notification: ${response.body()}")
-            throw RuntimeException("Error sending notification to unciv uuid ${target}, discord user id ${targetDiscordId}");
-        } else {
-            println("Notification sent to unciv uuid ${target}, discord user id ${targetDiscordId}")
+            throw RuntimeException("Received bad status code ${response.statusCode()}")
         }
     }
 

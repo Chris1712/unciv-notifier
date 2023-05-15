@@ -95,6 +95,6 @@ class Notifier(config: Config) {
             "Awaiting instructions, <@${discordId}>.",
         )
 
-        return "Game $saveName : " + messages[rnd.nextInt(messages.size)]
+        return "Game ${saveName.substring(0,4)} : " + messages[rnd.nextInt(messages.size)]
     }
 }

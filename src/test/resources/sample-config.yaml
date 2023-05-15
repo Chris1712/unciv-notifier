@@ -1,7 +1,10 @@
-savePath: /var/unciv-saves/4fea48b1-f8e5-4b0a-a784-23b51fec6fdc_Preview
+saveDir: /tmp/unciv-saves-test/
+saveFiles:
+  - 4fea48b1-f8e5-4b0a-a784-23b51fec6fdc_Preview
+  - 19f97aa2-8a0d-4f56-9783-b448e1463074_Preview
 discordToken: abc.y8yTg565.l1I9Xfff4r
 discordChannelId: 1084429893288349699
 uncivToDiscordUserMap:
   # Unciv player ID : Discord user ID
   10bf8d62-c112-11ed-afa1-0242ac120002: 4564879
-  b12de14f-37dc-4c01-a0e0-84a307683306: 78978979811112
+  b1c460d0-bf64-4e93-ad1d-a6576aad748f: 78978979811112

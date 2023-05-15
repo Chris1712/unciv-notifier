@@ -6,7 +6,7 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import java.io.File
 import java.util.*
 
-data class Config(val savePath: String, val discordToken: String, val discordChannelId: String, val uncivToDiscordUserMap: Map<UUID, String>) {
+data class Config(val saveDir: String, val saveFiles: List<String>, val discordToken: String, val discordChannelId: String, val uncivToDiscordUserMap: Map<UUID, String>) {
 
     companion object {
 

@@ -22,8 +22,8 @@ class Notifier(config: Config) {
         this.uncivToDiscordUserMap = config.uncivToDiscordUserMap
     }
 
-    fun notify(target: UUID) {
-        println("Notifying unciv uuid ${target} that it is their turn")
+    fun notify(target: UUID, saveName: String) {
+        println("Notifying unciv uuid $target that it is their turn in game $saveName")
         val targetDiscordId = uncivToDiscordUserMap[target]
         if (targetDiscordId == null) {
             println("No discord user mapped to unciv uuid ${target} - check config file")
@@ -37,7 +37,7 @@ class Notifier(config: Config) {
         var retryCount = 0;
         while (retryCount < 3) {
             try {
-                sendNotification(targetDiscordId)
+                sendNotification(targetDiscordId, saveName)
                 println("Notification sent to unciv uuid ${target}, discord user id ${targetDiscordId}")
                 break
             } catch (e: Exception) {
@@ -52,10 +52,10 @@ class Notifier(config: Config) {
 
     }
 
-    fun sendNotification(targetDiscordId: String) {
+    fun sendNotification(targetDiscordId: String, saveName: String) {
         val messageBody = """
             {
-                "content": "${getMessage(targetDiscordId)}"
+                "content": "${getMessage(targetDiscordId, saveName)}"
             }
         """.trimIndent()
 
@@ -63,7 +63,7 @@ class Notifier(config: Config) {
             .uri(channelMessageSendUri)
             .POST(HttpRequest.BodyPublishers.ofString(messageBody))
             .header("Content-Type", "application/json")
-            .header("Authorization", "Bot ${token}")
+            .header("Authorization", "Bot $token")
             .build();
 
         val response = client.send(request, HttpResponse.BodyHandlers.ofString())
@@ -72,7 +72,7 @@ class Notifier(config: Config) {
         }
     }
 
-    fun getMessage(discordId: String): String {
+    fun getMessage(discordId: String, saveName: String): String {
         val messages = listOf(
             // With thanks to chatgpt
             "It's your turn, <@${discordId}>!",
@@ -95,6 +95,6 @@ class Notifier(config: Config) {
             "Awaiting instructions, <@${discordId}>.",
         )
 
-        return messages[rnd.nextInt(messages.size)]
+        return "Game $saveName : " + messages[rnd.nextInt(messages.size)]
     }
 }

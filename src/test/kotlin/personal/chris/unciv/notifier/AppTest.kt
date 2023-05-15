@@ -1,8 +1,6 @@
 package personal.chris.unciv.notifier
 
-import org.mockito.ArgumentCaptor
 import org.mockito.Mockito
-import java.net.http.HttpRequest
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -32,7 +30,6 @@ class AppTest {
                 println("File already exists")
             }
         }
-        val requestCaptor = ArgumentCaptor.forClass(HttpRequest::class.java)
 
         val config = Config.fromArgs(arrayOf("src/test/resources/sample-config.yaml"))
         val mockNotifier = Mockito.mock<Notifier>()

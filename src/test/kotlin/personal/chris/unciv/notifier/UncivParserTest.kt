@@ -27,4 +27,11 @@ class UncivParserTest {
 
         assertEquals("b1c460d0-bf64-4e93-ad1d-a6576aad748f", nextTurn.toString())
     }
+
+    @Test fun getsCorrectTurnFromJson() {
+        // Newer versions of unciv have a json-formatted file (still encoded in base64)
+        val nextTurn = UncivParser.getNextTurnUuid(Paths.get("src/test/resources/sample3_Preview"))
+
+        assertEquals("ccc2ac3b-7d1e-4546-bf72-205e2f0f9694", nextTurn.toString())
+    }
 }

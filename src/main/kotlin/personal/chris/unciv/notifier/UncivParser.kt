@@ -1,5 +1,6 @@
 package personal.chris.unciv.notifier
 
+import kotlinx.serialization.json.*
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.nio.file.Path
@@ -12,8 +13,38 @@ class UncivParser {
         fun getNextTurnUuid(saveFile: Path): UUID {
             val saveFileContents: String = extractObjectFromFile(saveFile)
 
-            // Save file is a strange format, maybe json light? Hard to deserialize. So for now we just do some regex.
+            // There are two possibilities for save file format - json or an older weirder format
+            // Try json format first and then fall back to the older format
+            return try {
+                getNextTurnUuidFromJson(saveFileContents)
+            } catch (e: Exception) {
+                println("Couldn't parse save file as json: ${e.message}")
+                getNextTurnUuidFromOldFile(saveFileContents)
+            }
 
+        }
+
+        /**
+         * Extracts the next turn UUID from a json-formatted save file.
+         */
+        private fun getNextTurnUuidFromJson(saveFileContents: String): UUID {
+            val saveFileJson: JsonElement = Json.parseToJsonElement(saveFileContents)
+            val currentCiv: String = saveFileJson.jsonObject["currentPlayer"]!!.jsonPrimitive.content
+
+            val currentPlayerString: String = saveFileJson
+                .jsonObject["gameParameters"]!!
+                .jsonObject["players"]!!
+                .jsonArray.find {
+                    it.jsonObject["chosenCiv"]!!.jsonPrimitive.content == currentCiv
+                }!!
+                .jsonObject["playerId"]!!.jsonPrimitive.content
+            return UUID.fromString(currentPlayerString)
+        }
+
+        /**
+         * Extracts the next turn UUID from an old-format save file.
+         */
+        private fun getNextTurnUuidFromOldFile(saveFileContents: String): UUID {
             // We have a section like "currentPlayer: France,"
             val civMatch = Regex("currentPlayer:([^,]*),").find(saveFileContents)
                 ?: throw Exception("Couldn't find current civ in save file")

@@ -14,8 +14,9 @@ class UncivParser {
             val saveFileContents: String = extractObjectFromFile(saveFile)
 
             // There are two possibilities for save file format - json or an older weirder format
-            // Try json format first and then fall back to the older format
+            // See https://github.com/yairm210/Unciv/releases/tag/4.6.14 - "Game saves are regular json, not libgdx-specific format"
             return try {
+                // Try json format first and then fall back to the older format
                 getNextTurnUuidFromJson(saveFileContents)
             } catch (e: Exception) {
                 println("Couldn't parse save file as json: ${e.message}")
